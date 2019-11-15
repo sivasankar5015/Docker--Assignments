@@ -1,0 +1,40 @@
+Your company is ready to move forward with using Docker to run their applications. However, they have some complex container apps that can take advantage of the cluster management and orchestration features of Docker swarm. You have been asked to stand up a simple Docker swarm cluster to be used for some initial testing. A set of servers has already been provisioned for this purpose. The swarm cluster should meet the following criteria:
+
+One Swarm manager.
+Two worker nodes.
+All nodes should use Docker CE version 5:18.09.5~3-0~ubuntu-bionic.
+Both worker nodes should be joined to the cluster.
+Any non-root user should be able to run docker commands on all three servers.
+
+[NOTE: Write the series of commands to achieve above in this file below the question scenario with documentation]
+
+Good luck!
+
+1.One Swarm manager
+  docker swarm --advertise-addr 192.168.0.18
+Swarm initialized: current node (ncy36xovtfk6moy0q7q6f2m3p) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-1g5sk2gbsbwl3ub3hmj5hzuzl6o1y5bp46lrezbwbpkdne8u7i-6bkuf95693fd2gknn9agzczqc 192.168.0.18:2377
+
+
+2.Two worker nodes
+
+3.Both worker nodes should be joined to the cluster
+
+ paste the above command in both the nodes
+docker swarm join --token SWMTKN-1-1g5sk2gbsbwl3ub3hmj5hzuzl6o1y5bp46lrezbwbpkdne8u7i-6bkuf95693fd2gknn9agzczqc 192.168.0.18:2377
+
+This node joined a swarm as a worker.
+
+Check the manager and node added in cluster
+ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+ncy36xovtfk6moy0q7q6f2m3p *   node1               Ready               Active              Leader              19.03.4
+xjtiycbkugv2sd33l5aodhe91     node2               Ready               Active                                  19.03.4
+
+4.Any non-root user should be able to run docker commands on all three servers
+sudo usermod -a -G docker ubuntu (here ubuntu is my user)
+cat /etc/passwd
+ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash

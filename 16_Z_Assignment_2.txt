@@ -1,0 +1,94 @@
+Your company has recently decided to use Docker to run containers in production. They have built some Docker images to run their own proprietary software and need a place to store and manage these images. You have been asked to build a secure, private Docker registry for use by the company. In order to verify that everything works, you have also been asked to configure a Docker workstation server to push to and pull from the registry.
+
+To complete this lab, ensure that the following requirements are met for the registry:
+
+1. A private Docker registry is running on the Docker registry server using version 2 of the registry image.
+2. The container name for the registry should be registry.
+3. The registry should always automatically restart if it stops or the Docker daemon or server restarts.
+4. The registry should require authentication. Set up an initial account with the username docker and the password d0ck3rrU73z.
+5. The registry should use TLS with a self-signed certificate.
+6. The registry should listen on port 443.
+
+
+Set up the Docker workstation server to meet the following requirements:
+
+1. Docker is logged in to the private registry.
+2. Docker is configured to accept the self-signed cert. Do not turn off certificate verification using the insecure-registries setting.
+3. To confirm that everything is working, push a test image called ip-10-0-1-101:443/test-image:1 to the private registry. You can pull any image from Docker hub and tag it with ip-10-0-1-101:443/test-image:1 as a test.
+4. Delete the test image locally and pull it from the registry.
+
+[NOTE: Write the series of commands to achieve above in this file below the question scenario with documentation]
+
+Good luck!
+
+----------------------------------------------------------------
+1,2,3. A private Docker registry is running on the Docker registry server using version 2 of the registry image.
+ docker run -d -p 5000:5000 --restart=always --name registry registry:2
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+7a6615f3e4a2        registry:2          "/entrypoint.sh /etc…"   21 seconds ago      Up 19 seconds       0.0.0.0:5000->5000/tcp   registry
+
+4. The registry should require authentication. Set up an initial account with the username docker and the password d0ck3rrU73z
+
+root@ip-172-31-30-56:/home/ubuntu/regisrty# docker run --entrypoint htpasswd registry:2 -Bbn docker d0ck3rrU73z > auth/htpasswd
+root@ip-172-31-30-56:/home/ubuntu/regisrty/auth# cat htpasswd
+docker:$2y$05$oklV22N.bnM1e9ZEDPa5vO5b8.A1eG0Micw5mF8InP/coFGXSqlXy
+
+5. The registry should use TLS with a self-signed certificate
+  Generated self signed certifates
+ openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key -x509 -days 365 -out certs/domain.crt
+root@ip-172-31-30-56:/home/ubuntu/regisrty/certs# ls
+domain.crt  domain.key
+
+6.Run the registry with authentication and TLS enabled
+docker run -d -p 443:443 --restart=always --name registry -v /root/registry/certs:/certs -v /root/registry/auth:/auth -e REGISTRY_HTTP_ADDR=0.0.0.0:443 -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key -e REGISTRY_AUTH=htpasswd -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd registry:2
+
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                                  PORTS               NAMES
+4409f6342142        registry:2          "/entrypoint.sh /etc…"   About an hour ago   Up About an hour                0.0.0.0:5000->5000/tcp   registry2
+
+
+
+
+1. Docker is logged in to the private registry
+ docker login localhost:5000
+Login Succeeded
+
+docker pull ubuntu
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+fruit-list          1.0.0               9437b5847c96        5 hours ago         109MB
+ubuntu              latest              775349758637        2 weeks ago         64.2MB
+nginx               latest              540a289bab6c        3 weeks ago         126MB
+registry            2                   f32a97de94e1        8 months ago        25.8MB
+nginx               1.15.8              f09fe80eb0e7        9 months ago        109MB
+
+docker tag ubuntu localhost:5000/ubuntu:1
+ docker images
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+fruit-list              1.0.0               9437b5847c96        5 hours ago         109MB
+ubuntu                  latest              775349758637        2 weeks ago         64.2MB
+localhost:5000/ubuntu   1                   775349758637        2 weeks ago         64.2MB
+nginx                   latest              540a289bab6c        3 weeks ago         126MB
+registry                2                   f32a97de94e1        8 months ago        25.8MB
+nginx                   1.15.8              f09fe80eb0e7        9 months ago        109MB
+
+docker push localhost:5000/ubuntu:1
+docker rmi -f 775349758637
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+fruit-list          1.0.0               9437b5847c96        5 hours ago         109MB
+nginx               latest              540a289bab6c        3 weeks ago         126MB
+registry            2                   f32a97de94e1        8 months ago        25.8MB
+nginx               1.15.8              f09fe80eb0e7        9 months ago        109MB
+
+docker pull localhost:5000/ubuntu:1
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+fruit-list              1.0.0               9437b5847c96        5 hours ago         109MB
+localhost:5000/ubuntu   1                   775349758637        2 weeks ago         64.2MB
+nginx                   latest              540a289bab6c        3 weeks ago         126MB
+registry                2                   f32a97de94e1        8 months ago        25.8MB
+nginx                   1.15.8              f09fe80eb0e7        9 months ago        109MB
+
+
+
+
+
+
+

@@ -1,0 +1,40 @@
+Your company is ready to start using Docker on some of their servers. In order to get started, they want you to set up and configure Docker CE on a server that has already been set up. You will need to make sure that the server meets the following specifications:
+
+Docker CE is installed and running on the server.
+Use Docker CE version 5:18.09.5~3-0~ubuntu-bionic.
+Any non-root user has permission to run docker commands.
+The default logging driver is set to syslog.
+
+
+[NOTE: Write the series of commands to achieve above in this file below the question scenario with documentation]
+
+
+Good luck!
+
+
+
+1.Docker Installation on server.
+  Install reqired packages.
+sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+  Add the Docker GPG key and repo
+     Commands:
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  
+  Install Docker CE packages
+     Command:
+ sudo apt-get install -y docker-ce=5:18.09.5~3-0~ubuntu-bionic docker-ce-cli=5:18.09.5~3-0~ubuntu-bionic containerd.io
+
+2.Any non-root user has permission to run docker commands
+
+  sudo usermod -a -G docker ubuntu (Here my user is ubuntu)
+ubuntu@ip-172-31-82-56:~$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+3.The default logging driver is set to syslog
+ added deamon.json file under /etc/docke/ location and restart the docker.
+root@ip-172-31-82-56:/etc/docker# docker info --format '{{.LoggingDriver}}'
+json-file
+
+
