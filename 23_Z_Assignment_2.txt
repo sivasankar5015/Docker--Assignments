@@ -1,0 +1,349 @@
+Your supermarket company is in the process of improving their Docker-based applications. They have built a set of three RESTful data services that communicate with each other as part of a larger infrastructure. You have been given the task of designing a Docker application stack so that these three services can be easily managed and scaled as a unit. A Docker Swarm cluster has already been set up by you to use in previous execises.
+
+Here is some background information on the three services:
+
+1. Fruit Service
+	a. Provides a list of fruits sold in the company's stores.
+	b. You can use the Docker image tag linuxacademycontent/fruit-service:1.0.1 to run this service.
+	c. Listens on port 80.
+	d. The service should be named fruit inside the stack.
+
+2. Vegetable Service
+	a. Provides a list of vegetables sold in the company's stores.
+	b. You can use the Docker image tag linuxacademycontent/vegetable-service:1.0.0 to run this service.
+	c. Listens on port 80.
+	d. The service should be named vegetables inside the stack.
+
+3. All Products Service
+	a. Queries the other two services, combining their data into a single list of all produce.
+	b. You can use the Docker image tag linuxacademycontent/all-products:1.0.0 to run this service.
+	c. Listens on port 80.
+	d. Use the environment variables FRUIT_HOST and FRUIT_PORT to set the host and port which will be used to query the fruit service.
+	e. Use the environment variables VEGETABLE_HOST and VEGETABLE_PORT to set the host and port which will be used to query the vegetable service.
+
+Step 1
+Deploy a Docker application stack that meets the following specifications:
+1. The stack is called produce.
+2. The stack runs the Fruit, Vegetable, and All Products services.
+3. The All Products service is able to query the Fruit and Vegetable services.
+4. The All Products service is published on port 8080.
+
+One you have deployed the stack, you can verify whether it is working by querying the All Products service:
+
+curl localhost:8080
+
+If the stack is set up correctly, you should get a combined list of fruits and vegetables.
+
+Step 2
+Once you have deployed the stack and verified that it is working, modify the stack by scaling both the Fruit and Vegetable services up to 3 replicas.
+
+
+Good luck!
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+vi produce-stack.yml
+version: "3"
+services: 
+  fruit:
+      image: linuxacademycontent/fruit-service:1.0.1
+      ports:
+      - "8081:80"
+  vegetables:
+           image: linuxacademycontent/vegetable-service:1.0.0
+           ports:
+           - "8082:80"
+  all-products:
+             image: linuxacademycontent/all-products:1.0.0
+             ports:
+             - "8080:80"
+
+$ docker stack deploy -c produce-stack.yml produce
+Creating network produce_default
+Creating service produce_vegetables
+Creating service produce_all-products
+Creating service produce_fruit
+
+$ docker stack ls
+NAME                SERVICES            ORCHESTRATOR
+produce             3                   Swarm
+
+$ docker stack ps produce 
+ID                  NAME                     IMAGE                                         NODE                DESIRED STATE       CURRENT STATE              ERROR               PORTS
+vys2ns931am3        produce_fruit.1          linuxacademycontent/fruit-service:1.0.1       node1               Running             Running 10 seconds ago                         
+z6zfyaf3e8cv        produce_all-products.1   linuxacademycontent/all-products:1.0.0        node2               Running             Preparing 19 seconds ago                       
+1xd43pc7tlz0        produce_vegetables.1     linuxacademycontent/vegetable-service:1.0.0   node1               Running             Running 10 seconds ago                         
+
+$ curl localhost:8081
+{
+  "description": "A list of fruits.",
+  "fruits": [
+    "apple",
+    "apricot",
+    "avocado",
+    "banana",
+    "bell pepper",
+    "bilberry",
+    "blackberry",
+    "blackcurrant",
+    "blood orange",
+    "blueberry",
+    "boysenberry",
+    "breadfruit",
+    "canary melon",
+    "cantaloupe",
+    "cherimoya",
+    "cherry",
+    "chili pepper",
+    "clementine",
+    "cloudberry",
+    "coconut",
+    "cranberry",
+    "cucumber",
+    "currant",
+    "damson",
+    "date",
+    "dragonfruit",
+    "durian",
+    "eggplant",
+    "elderberry",
+    "feijoa",
+    "fig",
+    "goji berry",
+    "gooseberry",
+    "grape",
+    "grapefruit",
+    "guava",
+    "honeydew",
+    "huckleberry",
+    "jackfruit",
+    "jambul",
+    "jujube",
+    "kiwi fruit",
+    "kumquat",
+    "lemon",
+    "lime",
+    "loquat",
+    "lychee",
+    "mandarine",
+    "mango",
+    "mulberry",
+    "nectarine",
+    "nut",
+    "olive",
+    "orange",
+    "pamelo",
+    "papaya",
+    "passionfruit",
+    "peach",
+    "pear",
+    "persimmon",
+    "physalis",
+    "pineapple",
+    "plum",
+    "pomegranate",
+    "pomelo",
+    "purple mangosteen",
+    "quince",
+    "raisin",
+    "rambutan",
+    "raspberry",
+    "redcurrant",
+    "rock melon",
+    "salal berry",
+    "satsuma",
+    "star fruit",
+    "strawberry",
+    "tamarillo",
+    "tangerine",
+    "tomato",
+    "ugli fruit",
+    "watermelon"
+  ]
+}
+
+
+$ curl localhost:8082
+{
+    "description": "A list of vegetables.",
+    "vegetables": [
+        "acorn squash",
+        "alfalfa sprout",
+        "amaranth",
+        "anise",
+        "artichoke",
+        "arugula",
+        "asparagus",
+        "aubergine",
+        "azuki bean",
+        "banana squash",
+        "basil",
+        "bean sprout",
+        "beet",
+        "black bean",
+        "black-eyed pea",
+        "bok choy",
+        "borlotti bean",
+        "broad beans",
+        "broccoflower",
+        "broccoli",
+        "brussels sprout",
+        "butternut squash",
+        "cabbage",
+        "calabrese",
+        "caraway",
+        "carrot",
+        "cauliflower",
+        "cayenne pepper",
+        "celeriac",
+        "celery",
+        "chamomile",
+        "chard",
+        "chayote",
+        "chickpea",
+        "chives",
+        "cilantro",
+        "collard green",
+        "corn",
+        "corn salad",
+        "courgette",
+        "cucumber",
+        "daikon",
+        "delicata",
+        "dill",
+        "eggplant",
+        "endive",
+        "fennel",
+        "fiddlehead",
+        "frisee",
+        "garlic",
+        "gem squash",
+        "ginger",
+        "green bean",
+        "green pepper",
+        "habanero",
+        "herbs and spice",
+        "horseradish",
+        "hubbard squash",
+        "jalapeno",
+        "jerusalem artichoke",
+        "jicama",
+        "kale",
+        "kidney bean",
+        "kohlrabi",
+        "lavender",
+        "leek ",
+        "legume",
+        "lemon grass",
+        "lentils",
+        "lettuce",
+        "lima bean",
+        "mamey",
+        "mangetout",
+        "marjoram",
+        "mung bean",
+        "mushroom",
+        "mustard green",
+        "navy bean",
+        "new zealand spinach",
+        "nopale",
+        "okra",
+        "onion",
+        "oregano",
+        "paprika",
+        "parsley",
+        "parsnip",
+        "patty pan",
+        "pea",
+        "pinto bean",
+        "potato",
+        "pumpkin",
+        "radicchio",
+        "radish",
+        "rhubarb",
+        "rosemary",
+        "runner bean",
+        "rutabaga",
+        "sage",
+        "scallion",
+        "shallot",
+        "skirret",
+        "snap pea",
+        "soy bean",
+        "spaghetti squash",
+        "spinach",
+        "squash ",
+        "sweet potato",
+        "tabasco pepper",
+        "taro",
+        "tat soi",
+        "thyme",
+        "topinambur",
+        "tubers",
+        "turnip",
+        "wasabi",
+        "water chestnut",
+        "watercress",
+        "white radish",
+        "yam",
+        "zucchini"
+    ]
+}
+
+$ curl localhost:8080
+curl: (52) Empty reply from server
+
+$ docker pull linuxacademycontent/all-products:1.0.0
+$ docker images
+REPOSITORY                              TAG                 IMAGE ID            CREATED             SIZE
+linuxacademycontent/all-products        1.0.0               b7cd83119afe        6 months ago        915MB
+$ docker run -d -p 8085:80 linuxacademycontent/all-products:1.0.0
+$ docker ps
+CONTAINER ID        IMAGE                                         COMMAND                  CREATED             STATUS              PORTS                  NAMES
+afe610be543d        linuxacademycontent/all-products:1.0.0        "node index.js"          5 seconds ago       Up 3 seconds        0.0.0.0:8085->80/tcp   vigilant_mccarthy
+$ curl localhost:8085
+curl: (52) Empty reply from server
+
+$ ping 192.168.0.8:8085
+PING 192.168.0.8:8085 (192.168.0.8): 56 data bytes
+64 bytes from 192.168.0.8: seq=0 ttl=64 time=0.055 ms
+64 bytes from 192.168.0.8: seq=1 ttl=64 time=0.064 ms
+64 bytes from 192.168.0.8: seq=2 ttl=64 time=0.068 ms
+64 bytes from 192.168.0.8: seq=3 ttl=64 time=0.074 ms
+64 bytes from 192.168.0.8: seq=4 ttl=64 time=0.064 ms
+64 bytes from 192.168.0.8: seq=5 ttl=64 time=0.054 ms
+64 bytes from 192.168.0.8: seq=6 ttl=64 time=0.061 ms
+64 bytes from 192.168.0.8: seq=7 ttl=64 time=0.061 ms
+64 bytes from 192.168.0.8: seq=8 ttl=64 time=0.069 ms
+64 bytes from 192.168.0.8: seq=9 ttl=64 time=0.149 ms
+64 bytes from 192.168.0.8: seq=10 ttl=64 time=0.080 ms
+
+Step 2
+Once you have deployed the stack and verified that it is working, modify the stack by scaling both the Fruit and Vegetable services up to 3 replicas.
+
+Added below steps in produce-stack.yml file
+ deploy:
+   replicas: 3
+$ docker stack deploy -c produce-stack.yml produce
+Updating service produce_fruit (id: 1w120r442p4kbfl1azhcfqy0w)
+Updating service produce_vegetables (id: 1nd01yjwaz26tre51i7qgtayt)
+Updating service produce_all-products (id: j2j74iv8st202ros2q5u0f07l)
+
+$ docker stack ps produce 
+ID                  NAME                     IMAGE                                         NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+z15gydg3akyj        produce_fruit.1          linuxacademycontent/fruit-service:1.0.1       node1               Running             Running 52 minutes ago                       
+s3rype1iuryc        produce_all-products.1   linuxacademycontent/all-products:1.0.0        node2               Running             Running 52 minutes ago                       
+e4qazmy7e9au        produce_vegetables.1     linuxacademycontent/vegetable-service:1.0.0   node1               Running             Running 52 minutes ago                       
+4h6akwedueh7        produce_vegetables.2     linuxacademycontent/vegetable-service:1.0.0   node1               Running             Running 16 seconds ago                       
+zlx7diig3rqo        produce_fruit.2          linuxacademycontent/fruit-service:1.0.1       node2               Running             Running 11 seconds ago                       
+sbwiliaw29ge        produce_vegetables.3     linuxacademycontent/vegetable-service:1.0.0   node2               Running             Running 11 seconds ago                       
+t86zs90svtzo        produce_fruit.3          linuxacademycontent/fruit-service:1.0.1       node2               Running  
+
+$ docker service ls
+
+ID                  NAME                   MODE                REPLICAS            IMAGE                                         PORTS
+j2j74iv8st20        produce_all-products   replicated          1/1                 linuxacademycontent/all-products:1.0.0        *:8080->80/tcp
+1w120r442p4k        produce_fruit          replicated          3/3                 linuxacademycontent/fruit-service:1.0.1       *:8081->80/tcp
+1nd01yjwaz26        produce_vegetables     replicated          3/3                 linuxacademycontent/vegetable-service:1.0.0   *:8082->80/tcp
+
+
+

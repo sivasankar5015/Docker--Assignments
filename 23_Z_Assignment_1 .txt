@@ -1,0 +1,279 @@
+Your supermarket company is working on expanding their Docker infrastructure. They have an existing service that provides a list of fruit sold in their stores. After measuring the amount of load on this service, they have asked you to scale this service up to a higher number of replicas.
+
+In addition, there is a new service that provides a list of vegetables. This new service needs to be created in the cluster. Set up the swarm cluster to complete the lab, ensure that the swarm meets the following specifications:
+
+1. Scale the service called products-fruit to 5 replicas.
+2. Create a new service called products-vegetables running the linuxacademycontent/vegetable-service:1.0.0 image.
+3. Publish products-vegetables on port 8081. The application listens on port 80.
+4. Run products-vegetables with 3 replicas.
+
+You can test the products-fruit service from any swarm node (including the manager) with curl localhost:8080.
+
+Once products-vegetables is running, you should be able to test it from any swarm node (including the manager) with curl localhost:8081.
+
+Good luck!
+----------------------------------------------------------
+----------------------------------------------------------
+
+
+1.docker service create --replicas=1 --name products-fruit -p 8080:80 linuxacademycontent/fruit-service:1.0.0
+tto6ny2ov4e0tq05tmdp8ysfg
+overall progress: 1 out of 1 tasks 
+1/1: running   
+verify: Service converged 
+$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE                                     PORTS
+qihrk94gmtm5        products-fruit      replicated          1/1                 linuxacademycontent/fruit-service:1.0.0   *:8080->80/tcp
+
+$ docker service scale  products-fruit=5
+products-fruit scaled to 5
+overall progress: 5 out of 5 tasks 
+1/5: running   
+2/5: running   
+3/5: running   
+4/5: running   
+5/5: running   
+verify: Service converged 
+$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE                                     PORTS
+qihrk94gmtm5        products-fruit      replicated          5/5                 linuxacademycontent/fruit-service:1.0.0   *:8080->80/tcp
+
+[node1] (local) root@192.168.0.33 ~
+$ docker service ps products-fruit
+ID                  NAME                IMAGE                                     NODE                DESIRED STATE       CURRENT STATE                ERROR               PORTS
+w0zin89vz7v6        products-fruit.1    linuxacademycontent/fruit-service:1.0.0   node1               Running             Running 4 minutes ago                            
+x9gdwqmeejhm        products-fruit.2    linuxacademycontent/fruit-service:1.0.0   node2               Running             Running about a minute ago                       
+yexggfxdklo4        products-fruit.3    linuxacademycontent/fruit-service:1.0.0   node1               Running             Running about a minute ago                       
+4c3znkg8wbdq        products-fruit.4    linuxacademycontent/fruit-service:1.0.0   node2               Running             Running about a minute ago                       
+q3pvos8h14m2        products-fruit.5    linuxacademycontent/fruit-service:1.0.0   node2               Running             Running about a minute ago
+$ curl localhost:8080
+{
+  "description": "A list of fruits.",
+  "fruits": [
+    "apple",
+    "apricot",
+    "avocado",
+    "banana",
+    "bell pepper",
+    "bilberry",
+    "blackberry",
+    "blackcurrant",
+    "blood orange",
+    "blueberry",
+    "boysenberry",
+    "breadfruit",
+    "canary melon",
+    "cantaloupe",
+    "cherimoya",
+    "cherry",
+    "chili pepper",
+    "clementine",
+    "cloudberry",
+    "coconut",
+    "cranberry",
+    "cucumber",
+    "currant",
+    "damson",
+    "date",
+    "dragonfruit",
+    "durian",
+    "eggplant",
+    "elderberry",
+    "feijoa",
+    "fig",
+    "goji berry",
+    "gooseberry",
+    "grape",
+    "grapefruit",
+    "guava",
+    "honeydew",
+    "huckleberry",
+    "jackfruit",
+    "jambul",
+    "jujube",
+    "kiwi fruit",
+    "kumquat",
+    "lemon",
+    "lime",
+    "loquat",
+    "lychee",
+    "mandarine",
+    "mango",
+    "mulberry",
+    "nectarine",
+    "nut",
+    "olive",
+    "orange",
+    "pamelo",
+    "papaya",
+    "passionfruit",
+    "peach",
+    "pear",
+    "persimmon",
+    "physalis",
+    "pineapple",
+    "plum",
+    "pomegranate",
+    "pomelo",
+    "purple mangosteen",
+    "quince",
+    "raisin",
+    "rambutan",
+    "raspberry",
+    "redcurrant",
+    "rock melon",
+    "salal berry",
+    "satsuma",
+    "star fruit",
+    "strawberry",
+    "tamarillo",
+    "tangerine",
+    "tomato",
+    "ugli fruit",
+    "watermelon"
+  ]
+}
+2.
+$ docker service create --replicas=3 --name products-vegetables -p 8081:80 linuxacademycontent/vegetable-service:1.0.0
+r9vpqpnn38o54tut06ye26jsk
+overall progress: 3 out of 3 tasks 
+1/3: running   
+2/3: running   
+3/3: running   
+verify: Service converged 
+$ docker service ls
+ID                  NAME                  MODE                REPLICAS            IMAGE                                         PORTS
+qihrk94gmtm5        products-fruit        replicated          5/5                 linuxacademycontent/fruit-service:1.0.0       *:8080->80/tcp
+8mzolji0uyyk        products-vegetables   replicated          3/3                 linuxacademycontent/vegetable-service:1.0.0   *:8081->80/tcp
+$ docker service ps products-vegetables 
+$ docker service ps products-vegetables
+ID                  NAME                    IMAGE                                         NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+hidy3ds0fgki        products-vegetables.1   linuxacademycontent/vegetable-service:1.0.0   node2               Running             Running 50 seconds ago                       
+xgfaqbnop9in        products-vegetables.2   linuxacademycontent/vegetable-service:1.0.0   node1               Running             Running 50 seconds ago                       
+2uj9mcxnbam8        products-vegetables.3   linuxacademycontent/vegetable-service:1.0.0   node1               Running             Running 50 seconds ago
+$ curl localhost:8081
+{
+    "description": "A list of vegetables.",
+    "vegetables": [
+        "acorn squash",
+        "alfalfa sprout",
+        "amaranth",
+        "anise",
+        "artichoke",
+        "arugula",
+        "asparagus",
+        "aubergine",
+        "azuki bean",
+        "banana squash",
+        "basil",
+        "bean sprout",
+        "beet",
+        "black bean",
+        "black-eyed pea",
+        "bok choy",
+        "borlotti bean",
+        "broad beans",
+        "broccoflower",
+        "broccoli",
+        "brussels sprout",
+        "butternut squash",
+        "cabbage",
+        "calabrese",
+        "caraway",
+        "carrot",
+        "cauliflower",
+        "cayenne pepper",
+        "celeriac",
+        "celery",
+        "chamomile",
+        "chard",
+        "chayote",
+        "chickpea",
+        "chives",
+        "cilantro",
+        "collard green",
+        "corn",
+        "corn salad",
+        "courgette",
+        "cucumber",
+        "daikon",
+        "delicata",
+        "dill",
+        "eggplant",
+        "endive",
+        "fennel",
+        "fiddlehead",
+        "frisee",
+        "garlic",
+        "gem squash",
+        "ginger",
+        "green bean",
+        "green pepper",
+        "habanero",
+        "herbs and spice",
+        "horseradish",
+        "hubbard squash",
+        "jalapeno",
+        "jerusalem artichoke",
+        "jicama",
+        "kale",
+        "kidney bean",
+        "kohlrabi",
+        "lavender",
+        "leek ",
+        "legume",
+        "lemon grass",
+        "lentils",
+        "lettuce",
+        "lima bean",
+        "mamey",
+        "mangetout",
+        "marjoram",
+        "mung bean",
+        "mushroom",
+        "mustard green",
+        "navy bean",
+        "new zealand spinach",
+        "nopale",
+        "okra",
+        "onion",
+        "oregano",
+        "paprika",
+        "parsley",
+        "parsnip",
+        "patty pan",
+        "pea",
+        "pinto bean",
+        "potato",
+        "pumpkin",
+        "radicchio",
+        "radish",
+        "rhubarb",
+        "rosemary",
+        "runner bean",
+        "rutabaga",
+        "sage",
+        "scallion",
+        "shallot",
+        "skirret",
+        "snap pea",
+        "soy bean",
+        "spaghetti squash",
+        "spinach",
+        "squash ",
+        "sweet potato",
+        "tabasco pepper",
+        "taro",
+        "tat soi",
+        "thyme",
+        "topinambur",
+        "tubers",
+        "turnip",
+        "wasabi",
+        "water chestnut",
+        "watercress",
+        "white radish",
+        "yam",
+        "zucchini"
+    ]
+}
