@@ -321,8 +321,34 @@ Step 2
 Once you have deployed the stack and verified that it is working, modify the stack by scaling both the Fruit and Vegetable services up to 3 replicas.
 
 Added below steps in produce-stack.yml file
- deploy:
+deploy:
    replicas: 3
+
+version: "3"
+services: 
+  fruit:
+      image: linuxacademycontent/fruit-service:1.0.1
+      ports:
+      - "8081:80"
+      environment:
+      - FRUIT_HOST=http://192.168.0.8
+      - FRUIT_PORT=8081
+      deploy:
+        replicas: 3
+  vegetables:
+      image: linuxacademycontent/vegetable-service:1.0.0
+      ports:
+      - "8082:80"
+      environment:
+      - FRUIT_HOST=http://192.168.0.8
+      - FRUIT_PORT=8082
+      deploy:
+        replicas: 3
+  all-products:
+             image: linuxacademycontent/all-products:1.0.0
+             ports:
+             - "8080:80"
+
 $ docker stack deploy -c produce-stack.yml produce
 Updating service produce_fruit (id: 1w120r442p4kbfl1azhcfqy0w)
 Updating service produce_vegetables (id: 1nd01yjwaz26tre51i7qgtayt)
