@@ -1,0 +1,159 @@
+Started by user sivasankar
+Obtained Jenkinsfile from git https://github.com/sivasankar5015/webapp.git
+Running in Durability level: MAX_SURVIVABILITY
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /home/ubuntu/.jenkins/workspace/Docker-build-and-push
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+No credentials specified
+ > git rev-parse --is-inside-work-tree # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/sivasankar5015/webapp.git # timeout=10
+Fetching upstream changes from https://github.com/sivasankar5015/webapp.git
+ > git --version # timeout=10
+ > git fetch --tags --progress -- https://github.com/sivasankar5015/webapp.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git rev-parse refs/remotes/origin/origin/master^{commit} # timeout=10
+Checking out Revision 620642b2a4880f258b41ad2935402ef136e852d6 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 620642b2a4880f258b41ad2935402ef136e852d6 # timeout=10
+Commit message: "Update Jenkinsfile"
+ > git rev-list --no-walk 9de0a171857538fa0e2bcc313d387b6b1b55c82f # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] sh
++ mvn clean package
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------------------< [0;36mwebproject:webapp[0;1m >--------------------------[m
+[[1;34mINFO[m] [1mBuilding webapp Maven Webapp 1.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ war ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-clean-plugin:2.5:clean[m [1m(default-clean)[m @ [36mwebapp[0;1m ---[m
+[[1;34mINFO[m] Deleting /home/ubuntu/.jenkins/workspace/Docker-build-and-push/target
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:2.6:resources[m [1m(default-resources)[m @ [36mwebapp[0;1m ---[m
+[[1;33mWARNING[m] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[[1;34mINFO[m] skip non existing resourceDirectory /home/ubuntu/.jenkins/workspace/Docker-build-and-push/src/main/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.1:compile[m [1m(default-compile)[m @ [36mwebapp[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:2.6:testResources[m [1m(default-testResources)[m @ [36mwebapp[0;1m ---[m
+[[1;33mWARNING[m] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[[1;34mINFO[m] skip non existing resourceDirectory /home/ubuntu/.jenkins/workspace/Docker-build-and-push/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.1:testCompile[m [1m(default-testCompile)[m @ [36mwebapp[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:2.12.4:test[m [1m(default-test)[m @ [36mwebapp[0;1m ---[m
+[[1;34mINFO[m] No tests to run.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-war-plugin:2.2:war[m [1m(default-war)[m @ [36mwebapp[0;1m ---[m
+[[1;34mINFO[m] Packaging webapp
+[[1;34mINFO[m] Assembling webapp [webapp] in [/home/ubuntu/.jenkins/workspace/Docker-build-and-push/target/webapp]
+[[1;34mINFO[m] Processing war project
+[[1;34mINFO[m] Copying webapp resources [/home/ubuntu/.jenkins/workspace/Docker-build-and-push/src/main/webapp]
+[[1;34mINFO[m] Webapp assembled in [44 msecs]
+[[1;34mINFO[m] Building war: /home/ubuntu/.jenkins/workspace/Docker-build-and-push/target/webapp.war
+[[1;34mINFO[m] WEB-INF/web.xml already added, skipping
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  2.858 s
+[[1;34mINFO[m] Finished at: 2019-11-21T06:52:04Z
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[Pipeline] sh
++ pwd
+/home/ubuntu/.jenkins/workspace/Docker-build-and-push
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Building Docker image)
+[Pipeline] sh
++ docker build -t webapp:28 .
+Sending build context to Docker daemon  242.2kB
+
+Step 1/4 : FROM tomcat
+ ---> 882487b8be1d
+Step 2/4 : ADD ./target/*.war /usr/local/tomcat/webapps/
+ ---> e72cf5bc13a0
+Step 3/4 : EXPOSE 8080
+ ---> Running in c9b6548206fb
+Removing intermediate container c9b6548206fb
+ ---> 89eace76e796
+Step 4/4 : CMD ["catalina.sh","run"]
+ ---> Running in 9a1896eb1b70
+Removing intermediate container 9a1896eb1b70
+ ---> e9be2b6b2a71
+Successfully built e9be2b6b2a71
+Successfully tagged webapp:28
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Docker hub loging)
+[Pipeline] sh
++ docker login -u siva3100 -p Siva@5015
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+WARNING! Your password will be stored unencrypted in /home/ubuntu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Tagging a Image)
+[Pipeline] sh
++ docker tag webapp:28 siva3100/webapp:28
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (pushing image to the Docker Hub)
+[Pipeline] sh
++ docker push siva3100/webapp:28
+The push refers to repository [docker.io/siva3100/webapp]
+71f7ed8d32fe: Preparing
+65e5e74a1404: Preparing
+38d8d468142f: Preparing
+08579474bb30: Preparing
+a8902d6047fe: Preparing
+99557920a7c5: Preparing
+7e3c900343d0: Preparing
+b8f8aeff56a8: Preparing
+687890749166: Preparing
+2f77733e9824: Preparing
+97041f29baff: Preparing
+99557920a7c5: Waiting
+7e3c900343d0: Waiting
+b8f8aeff56a8: Waiting
+687890749166: Waiting
+2f77733e9824: Waiting
+97041f29baff: Waiting
+65e5e74a1404: Mounted from library/tomcat
+08579474bb30: Mounted from library/tomcat
+38d8d468142f: Mounted from library/tomcat
+99557920a7c5: Mounted from library/tomcat
+7e3c900343d0: Mounted from library/tomcat
+a8902d6047fe: Mounted from library/tomcat
+2f77733e9824: Mounted from library/tomcat
+687890749166: Mounted from library/tomcat
+b8f8aeff56a8: Mounted from library/tomcat
+97041f29baff: Mounted from library/tomcat
+71f7ed8d32fe: Pushed
+28: digest: sha256:3b4c3fae614bcd34d31bab952277e91e0237fe984f97fecc0444a2d118af707b size: 2630
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
